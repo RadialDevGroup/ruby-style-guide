@@ -204,15 +204,17 @@ Translations of the guide are available in the following languages:
   ```
 
 * <a name="spaces-operators"></a>
-  Use spaces around operators, after commas, colons and semicolons, around `{`
-  and before `}`. Whitespace might be (mostly) irrelevant to the Ruby
-  interpreter, but its proper use is the key to writing easily readable code.
-<sup>[[link](#spaces-operators)]</sup>
+  Use spaces around operators, after commas, colons and semicolons, before `{`,
+  after block variable declarations or after the opening brace if there are no
+  block variables, and before `}`. Whitespace might be (mostly) irrelevant to
+  the Ruby interpreter, but its proper use is the key to writing easily
+  readable code. <sup>[[link](#spaces-operators)]</sup>
 
   ```Ruby
   sum = 1 + 2
   a, b = 1, 2
-  [1, 2, 3].each { |e| puts e }
+  [1, 2, 3].each {|e| puts e }
+  { one: 1, two: 2 }
   class FooError < StandardError; end
   ```
 
@@ -225,23 +227,6 @@ Translations of the guide are available in the following languages:
   # good
   e = M * c**2
   ```
-
-  `{` and `}` deserve a bit of clarification, since they are used
-  for block and hash literals, as well as string interpolation.
-  For hash literals two styles are considered acceptable.
-
-  ```Ruby
-  # good - space after { and before }
-  { one: 1, two: 2 }
-
-  # good - no space after { and before }
-  {one: 1, two: 2}
-  ```
-
-  The first variant is slightly more readable (and arguably more
-  popular in the Ruby community in general). The second variant has
-  the advantage of adding visual difference between block and hash
-  literals. Whichever one you pick - apply it consistently.
 
 * <a name="no-spaces-braces"></a>
   No spaces after `(`, `[` or before `]`, `)`.
@@ -310,29 +295,16 @@ Translations of the guide are available in the following languages:
   end
   ```
 
+  This indentation style preserves the Ruby community's one-unindent-per-indent
+  general style convention.
+
 * <a name="indent-conditional-assignment"></a>
   When assigning the result of a conditional expression to a variable,
-  preserve the usual alignment of its branches.
+  preserve the usual alignment of its branches with the variable considered
+  part of the initiating line.
 <sup>[[link](#indent-conditional-assignment)]</sup>
 
-  ```Ruby
-  # bad - pretty convoluted
-  kind = case year
-  when 1850..1889 then 'Blues'
-  when 1890..1909 then 'Ragtime'
-  when 1910..1929 then 'New Orleans Jazz'
-  when 1930..1939 then 'Swing'
-  when 1940..1950 then 'Bebop'
-  else 'Jazz'
-  end
-
-  result = if some_cond
-    calc_something
-  else
-    calc_something_else
-  end
-
-  # good - it's apparent what's going on
+  # bad - looks like badly formatted PHP
   kind = case year
          when 1850..1889 then 'Blues'
          when 1890..1909 then 'Ragtime'
@@ -348,7 +320,7 @@ Translations of the guide are available in the following languages:
              calc_something_else
            end
 
-  # good (and a bit more width efficient)
+  # bad - looks like Python
   kind =
     case year
     when 1850..1889 then 'Blues'
@@ -366,6 +338,29 @@ Translations of the guide are available in the following languages:
       calc_something_else
     end
   ```
+
+  ```Ruby
+  # good
+  kind = case year
+  when 1850..1889
+    'Blues'
+  when 1890..1909
+    'Ragtime'
+  when 1910..1929
+    'New Orleans Jazz'
+  when 1930..1939
+    'Swing'
+  when 1940..1950
+    'Bebop'
+  else
+    'Jazz'
+  end
+
+  result = if some_cond
+    calc_something
+  else
+    calc_something_else
+  end
 
 * <a name="empty-lines-between-methods"></a>
   Use empty lines between method definitions and also to break up a method
