@@ -163,7 +163,7 @@ Translations of the guide are available in the following languages:
   class FooError < StandardError
   end
 
-  # okish
+  # okayish
   class FooError < StandardError; end
 
   # good
@@ -181,14 +181,17 @@ Translations of the guide are available in the following languages:
   # bad
   def too_much; something; something_else; end
 
-  # okish - notice that the first ; is required
+  # bad
   def no_braces_method; body end
 
-  # okish - notice that the second ; is optional
+  # okayish
   def no_braces_method; body; end
 
-  # okish - valid syntax, but no ; makes it kind of hard to read
+  # bad
   def some_method() body end
+
+  # okayish - empty method definition (no body)
+  def no_op; end
 
   # good
   def some_method
@@ -196,17 +199,10 @@ Translations of the guide are available in the following languages:
   end
   ```
 
-  One exception to the rule are empty-body methods.
-
-  ```Ruby
-  # good
-  def no_op; end
-  ```
-
 * <a name="spaces-operators"></a>
-  Use spaces around operators, after commas, colons and semicolons, before `{`,
-  after block variable declarations or after the opening brace if there are no
-  block variables, and before `}`. Whitespace might be (mostly) irrelevant to
+  Use spaces around operators, after commas, colons, and semicolons; before `{`,
+  after block variable declarations, or after the opening brace if there are no
+  block variables; and before `}`. Whitespace might be (mostly) irrelevant to
   the Ruby interpreter, but its proper use is the key to writing easily
   readable code. <sup>[[link](#spaces-operators)]</sup>
 
@@ -238,7 +234,7 @@ Translations of the guide are available in the following languages:
   ```
 
 * <a name="no-space-bang"></a>
-  No space after `!`.
+  No space after `!` for negation.
 <sup>[[link](#no-space-bang)]</sup>
 
   ```Ruby
@@ -264,9 +260,7 @@ Translations of the guide are available in the following languages:
     ```
 
 * <a name="indent-when-to-case"></a>
-  Indent `when` as deep as `case`. I know that many would disagree
-  with this one, but it's the style established in both "The Ruby
-  Programming Language" and "Programming Ruby".
+  Indent `when` as deep as `case`.
 <sup>[[link](#indent-when-to-case)]</sup>
 
   ```Ruby
@@ -296,7 +290,7 @@ Translations of the guide are available in the following languages:
   ```
 
   This indentation style preserves the Ruby community's one-unindent-per-indent
-  general style convention.
+  general style convention.  Much of the time, however, a case is a code smell.
 
 * <a name="indent-conditional-assignment"></a>
   When assigning the result of a conditional expression to a variable,
@@ -320,7 +314,7 @@ Translations of the guide are available in the following languages:
              calc_something_else
            end
 
-  # bad - looks like Python
+  # bad - fine for Python, perhaps, but this is Ruby
   kind =
     case year
     when 1850..1889 then 'Blues'
@@ -402,28 +396,28 @@ Translations of the guide are available in the following languages:
   ```
 
 * <a name="spaces-around-equals"></a>
-  Use spaces around the `=` operator when assigning default values to method
-  parameters:
+  No spaces are needed around the `=` operator when assigning default values to
+  method parameters, but they can be nice sometimes, even if they end up
+  looking a little odd in series:
 <sup>[[link](#spaces-around-equals)]</sup>
 
   ```Ruby
-  # bad
+  # fine
   def some_method(arg1=:default, arg2=nil, arg3=[])
     # do something...
   end
 
-  # good
+  # okayish
   def some_method(arg1 = :default, arg2 = nil, arg3 = [])
     # do something...
   end
   ```
 
-  While several Ruby books suggest the first style, the second is much more
-  prominent in practice (and arguably a bit more readable).
+  Several Ruby books suggest the first style, but the second is also common.
 
 * <a name="no-trailing-backslash"></a>
-  Avoid line continuation `\` where not required. In practice, avoid using
-  line continuations for anything but string concatenation.
+  Avoid line continuation `\` where not required.  Even with long strings,
+  explicit concatenation is a preferred approach to line continuation.
 <sup>[[link](#no-trailing-backslash)]</sup>
 
   ```Ruby
@@ -431,55 +425,80 @@ Translations of the guide are available in the following languages:
   result = 1 - \
            2
 
-  # good (but still ugly as hell)
+  # ugly
   result = 1 \
            - 2
 
-  long_string = 'First part of the long string' \
-                ' and second part of the long string'
+  # better, but less than ideal: use heredocs instead if at all reasonable
+  long_string = 'First part of the long string' <<
+    ' and second part of the long string'
   ```
 
 * <a name="consistent-multi-line-chains"></a>
-    Adopt a consistent multi-line method chaining style. There are two
-    popular styles in the Ruby community, both of which are considered
-    good - leading `.` (Option A) and trailing `.` (Option B).
+    For multi-line method chaining, try to break lines on delimiters, such as
+    when using parentheses for arguments.  Where nothing so convenient comes
+    along, and the reason a method chain runs to a second line has nothing to
+    do with blocks or parameters, you may have a code smell and a reason to
+    consider refactoring, particularly if the long method chain is a recurring
+    pattern.  If, for some reason, this is not an option, letting a line of
+    code run a little long is often the lesser evil.  Opinions are split on
+    whether, in the case of line splitting in the midst of a method chain, it
+    is better to attach the dot to the line before the split or the line after
+    the split.
 <sup>[[link](#consistent-multi-line-chains)]</sup>
 
-  * **(Option A)** When continuing a chained method invocation on
-    another line keep the `.` on the second line.
-
     ```Ruby
-    # bad - need to consult first line to understand second line
+    # bad - need to consult first line to understand second line, and
+    # indentation gets tricky/ugly
     one.two.three.
       four
 
-    # good - it's immediately clear what's going on the second line
-    one.two.three
-      .four
-    ```
-
-  * **(Option B)** When continuing a chained method invocation on another line,
-    include the `.` on the first line to indicate that the
-    expression continues.
-
-    ```Ruby
-    # bad - need to read ahead to the second line to know that the chain continues
+    # also bad - need to read ahead to the second line to know that the chain
+    # continues, and indentation still gets tricky/ugly
     one.two.three
       .four
 
-    # good - it's immediately clear that the expression continues beyond the first line
-    one.two.three.
-      four
-    ```
+    # pretty mediocre, but not a hanging offense
+    one.two.three(
+      'foo',
+      'bar'
+    ).four
 
-  A discussion on the merits of both alternative styles can be found
-  [here](https://github.com/bbatsov/ruby-style-guide/pull/176).
+    # sometimes tolerable if necessary
+    thing.one_long_method.two_long_methods.three_long_methods. # plus more
+
+    #
+    class Thing
+      # implementation stuff
+
+      def one_long_method
+        # do stuff
+        return self
+      end
+
+      def two_long_methods
+        # do other stuff
+        return self
+      end
+
+      def three_long_methods
+        # do other stuff
+        return something_else
+      end
+
+      def method_chain_shortener
+        one_long_method.two_long_methods.three_long_methods
+      end
+    end
+
+    thing = Thing.new(arguments)
+
+    thing.chain_shortener # plus more
+    ```
 
 * <a name="no-double-indent"></a>
-    Align the parameters of a method call if they span more than one
-    line. When aligning parameters is not appropriate due to line-length
-    constraints, single indent for the lines after the first is also
-    acceptable.
+    Indent parameters when they must be broken up across multiple lines.  Do
+    not "align" them.  This is not PHP.
 <sup>[[link](#no-double-indent)]</sup>
 
   ```Ruby
@@ -488,7 +507,7 @@ Translations of the guide are available in the following languages:
     Mailer.deliver(to: 'bob@example.com', from: 'us@example.com', subject: 'Important message', body: source.text)
   end
 
-  # bad (double indent)
+  # bad - double indent, hanging indent
   def send_mail(source)
     Mailer.deliver(
         to: 'bob@example.com',
@@ -497,7 +516,8 @@ Translations of the guide are available in the following languages:
         body: source.text)
   end
 
-  # good
+  # bad - looks like PHP, with hanging indent
+  # and `end` appearing entirely disconnected
   def send_mail(source)
     Mailer.deliver(to: 'bob@example.com',
                    from: 'us@example.com',
@@ -505,7 +525,7 @@ Translations of the guide are available in the following languages:
                    body: source.text)
   end
 
-  # good (normal indent)
+  # good - normal indent with unindented delimiter
   def send_mail(source)
     Mailer.deliver(
       to: 'bob@example.com',
@@ -517,7 +537,8 @@ Translations of the guide are available in the following languages:
   ```
 
 * <a name="align-multiline-arrays"></a>
-  Align the elements of array literals spanning multiple lines.
+  Indent the elements of array literals spanning multiple lines with ending
+  bracket unindented.
 <sup>[[link](#align-multiline-arrays)]</sup>
 
   ```Ruby
@@ -525,16 +546,16 @@ Translations of the guide are available in the following languages:
   menu_item = ['Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam',
     'Baked beans', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam']
 
+  # bad
+  menu_item =
+    ['Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam',
+     'Baked beans', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam']
+
   # good
   menu_item = [
     'Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam',
     'Baked beans', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam'
   ]
-
-  # good
-  menu_item =
-    ['Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam',
-     'Baked beans', 'Spam', 'Spam', 'Spam', 'Spam', 'Spam']
   ```
 
 * <a name="underscores-in-numerics"></a>
@@ -545,17 +566,17 @@ Translations of the guide are available in the following languages:
   # bad - how many 0s are there?
   num = 1000000
 
-  # good - much easier to parse for the human brain
+  # good - much easier to parse by eye
   num = 1_000_000
   ```
 
 * <a name="rdoc-conventions"></a>
-    Use RDoc and its conventions for API documentation.  Don't put an
-    empty line between the comment block and the `def`.
+    Use RDoc and its conventions for API documentation.  An empty line between
+    the comment block and the `def` is acceptable.
 <sup>[[link](#rdoc-conventions)]</sup>
 
 * <a name="80-character-limits"></a>
-  Limit lines to 80 characters.
+  Limit lines to 80 characters when at all reasonable . . . at all.
 <sup>[[link](#80-character-limits)]</sup>
 
 * <a name="no-trailing-whitespace"></a>
@@ -563,12 +584,18 @@ Translations of the guide are available in the following languages:
 <sup>[[link](#no-trailing-whitespace)]</sup>
 
 * <a name="newline-eof"></a>
-  End each file with a newline.
+  End each file with a newline.  Some editors do this by default, while others
+  do not.  Various vi implementations do this by default; Sublime does not.
+  Editors designed with programmers in mind are typically configurable to
+  provide ending newlines automatically.
 <sup>[[link](#newline-eof)]</sup>
 
 * <a name="no-block-comments"></a>
-    Don't use block comments. They cannot be preceded by whitespace and are not
-    as easy to spot as regular comments.
+    Avoid using block comments in most circumstances, though there are cases
+    where it is appropriate. They cannot be preceded by whitespace, which lends
+    to ugliness when used carelessly, though they can be quite useful for
+    temporarily commenting out code while testing or (sometimes) for RDoc
+    commenting.
 <sup>[[link](#no-block-comments)]</sup>
 
   ```Ruby
@@ -581,6 +608,10 @@ Translations of the guide are available in the following languages:
   # good
   # comment line
   # another comment line
+
+  =begin rdoc
+  a bunch of lines of documentation
+  =end
   ```
 
 ## Syntax
